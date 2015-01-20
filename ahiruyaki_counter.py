@@ -251,10 +251,11 @@ if __name__ == '__main__':
                 else:
                     yakishi_list[tweet.user.screen_name] += 1
 #                print tweet.created_at, tweet.user.screen_name, tweet.text
-    for id, count in yakishi_list.items():
-        if len(id) == 0:
-            postdata = postdata +  u"あひるは焼かれなかった\n"
-        else:
+    time.sleep(60)
+    if len(yakishi_list) == 0:
+        postdata = postdata +  u"あひるは焼かれなかった\n"
+    else:
+        for id, count in yakishi_list.items():
             item_key = "ahiruyaki.hcount." + id
             put_zbx_sender(conf.get("zabbix","ip"), item_key, "ahiruyaki", 1)
             postdata = postdata +  u"@" + id + ": " + str(count) + u"焼き\n"
