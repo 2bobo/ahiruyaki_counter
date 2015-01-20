@@ -255,9 +255,12 @@ if __name__ == '__main__':
         int(oneoldtime.strftime("%H")),
         59,59,999999)
 
-#    print start_time
+    twdate = start_time + datetime.timedelta(hours = 9)
+#    print type(twdate.strftime("%Y年%m月%d日%H時"))
 #    print end_time
     yakishi_list = {}
+
+    postdata = unicode(twdate.strftime("%Y年%m月%d日%H時台のあひる焼きカウンター\n"),'utf-8', 'ignore')
     auth = authorize(conf)
     api = tweepy.API(auth_handler=auth)
     keywords = [u"あひる焼き", u"-RT"]
@@ -265,7 +268,7 @@ if __name__ == '__main__':
     for tweet in api.search(q=query, count=1000):
 #        print type(tweet.created_at)
         textdata = tweet.text.encode('utf-8')
-        if textdata.find("あひる焼き") != -1 :
+        if textdata.find("あひる焼き") != -1  and textdata.find("あひる焼きカウンター") == -1:
             if start_time < tweet.created_at < end_time :
                 if not tweet.user.screen_name in yakishi_list:
                     itemdata = create_zbx_item(tweet.user.screen_name, zbx_api, zbx_auth_key)
@@ -277,5 +280,9 @@ if __name__ == '__main__':
     for id, count in yakishi_list.items():
         item_key = "ahiruyaki.hcount." + id
         put_zbx_sender(conf.get("zabbix","ip"), item_key, "ahiruyaki", 1)
-#        print u"@" + id + ": " + str(count) + u"あひる焼き"
+        postdata = postdata +  u"@" + id + ": " + str(count) + u"焼き\n"
+
+    #post twitter
+    print postdata
+    api.update_status(postdata)
 
