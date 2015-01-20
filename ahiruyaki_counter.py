@@ -257,7 +257,7 @@ if __name__ == '__main__':
     else:
         for id, count in yakishi_list.items():
             item_key = "ahiruyaki.hcount." + id
-            put_zbx_sender(conf.get("zabbix","ip"), item_key, "ahiruyaki", 1)
+            put_zbx_sender(conf.get("zabbix","ip"), item_key, "ahiruyaki", count)
             postdata = postdata +  u"@" + id + ": " + str(count) + u"焼き\n"
 
     #post twitter
