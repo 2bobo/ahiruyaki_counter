@@ -262,5 +262,5 @@ if __name__ == '__main__':
 
     #post twitter
 #    print postdata
-    api.update_status(postdata)
+#    api.update_status(postdata)
 
