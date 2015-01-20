@@ -229,7 +229,7 @@ def put_zbx_sender(zbxsvip, zbx_key, hostip, sendvalue):
     sender.ClearData()
 
 if __name__ == '__main__':
-    config_file_path = "config.ini"
+    config_file_path = "/usr/local/sbin/scripts/python2/ahiruyaki_counter/config.ini"
     conf = ConfigParser.SafeConfigParser()
     conf.read(config_file_path)
 
@@ -260,7 +260,7 @@ if __name__ == '__main__':
 #    print end_time
     yakishi_list = {}
 
-    postdata = unicode(twdate.strftime("%Y年%m月%d日%H時台のあひる焼きカウンター\n"),'utf-8', 'ignore')
+    postdata = unicode(twdate.strftime("%Y年%m月%d日%H時台のあひる焼きカウンター\n(テスト運用中)\n"),'utf-8', 'ignore')
     auth = authorize(conf)
     api = tweepy.API(auth_handler=auth)
     keywords = [u"あひる焼き", u"-RT"]
@@ -268,7 +268,7 @@ if __name__ == '__main__':
     for tweet in api.search(q=query, count=1000):
 #        print type(tweet.created_at)
         textdata = tweet.text.encode('utf-8')
-        if textdata.find("あひる焼き") != -1  and textdata.find("あひる焼きカウンター") == -1:
+        if textdata.find("あひる焼き") != -1: #and textdata.find("あひる焼きカウンター") == -1:
             if start_time < tweet.created_at < end_time :
                 if not tweet.user.screen_name in yakishi_list:
                     itemdata = create_zbx_item(tweet.user.screen_name, zbx_api, zbx_auth_key)
