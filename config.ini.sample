@@ -1,0 +1,11 @@
+# get API token and change filename ahiruyaki_counter.cfg
+[twitter]
+consumer_key=
+consumer_secret=
+access_key=
+access_secret=
+
+[zabbix]
+url=http://127.0.0.1/zabbix/api_jsonrpc.php
+userid=admin
+passwd=zabbix
