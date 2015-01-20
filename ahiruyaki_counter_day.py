@@ -158,7 +158,7 @@ def authorize(conf):
     return auth
 
 def create_zbx_item(tweetid, zbx_api, zbx_auth_key):
-    item_key = "ahiruyaki.hcount." + tweetid
+    item_key = "ahiruyaki.dcount." + tweetid
     reqdata = json.dumps({
         "jsonrpc": "2.0",
         "method": "item.get",
@@ -173,7 +173,7 @@ def create_zbx_item(tweetid, zbx_api, zbx_auth_key):
     zbx_item_check_result = zbx_api.send(reqdata)
 
     if len(zbx_item_check_result["result"]) == 0:
-        attweetid = "[毎時]@" + tweetid
+        attweetid = u"[日次]@" + tweetid
         reqdata = json.dumps({
             "jsonrpc": "2.0",
             "method": "item.create",
@@ -184,7 +184,7 @@ def create_zbx_item(tweetid, zbx_api, zbx_auth_key):
                 "type": 2,
                 "value_type": 3,
                 "applications": [
-                    "461"
+                    "462"
                 ],
             },
         "auth":zbx_auth_key,
@@ -219,26 +219,24 @@ if __name__ == '__main__':
     # get zabbxi api cookie
     zbx_auth_key = zbx_api.auth()
 
-    oneoldtime = datetime.datetime.utcnow() - datetime.timedelta(hours = 1)
+    oneoldtime = datetime.datetime.utcnow() - datetime.timedelta(days = 1)
     start_time = datetime.datetime(
         int(oneoldtime.strftime("%Y")),
         int(oneoldtime.strftime("%m")),
         int(oneoldtime.strftime("%d")),
-        int(oneoldtime.strftime("%H")),
-        0,0,0)
+        0,0,0,0)
     end_time = datetime.datetime(
         int(oneoldtime.strftime("%Y")),
         int(oneoldtime.strftime("%m")),
         int(oneoldtime.strftime("%d")),
-        int(oneoldtime.strftime("%H")),
-        59,59,999999)
+        23,59,59,999999)
 
     twdate = start_time + datetime.timedelta(hours = 9)
 #    print type(twdate.strftime("%Y年%m月%d日%H時"))
 #    print end_time
     yakishi_list = {}
 
-    postdata = unicode(twdate.strftime("%Y年%m月%d日%H時台に焼かれたあひるの数\n(テスト運用中)\n"),'utf-8', 'ignore')
+    postdata = unicode(twdate.strftime("%Y年%m月%d日に焼かれたあひるの数\n(テスト運用中)\n"),'utf-8', 'ignore')
     auth = authorize(conf)
     api = tweepy.API(auth_handler=auth)
     keywords = [u"あひる焼き", u"-RT"]
@@ -253,13 +251,13 @@ if __name__ == '__main__':
                     yakishi_list[tweet.user.screen_name] = 1
                 else:
                     yakishi_list[tweet.user.screen_name] += 1
-#                print tweet.created_at, tweet.user.screen_name, tweet.text
+                print tweet.created_at, tweet.user.screen_name, tweet.text
     time.sleep(60)
     if len(yakishi_list) == 0:
         postdata = postdata +  u"あひるは焼かれなかった\n"
     else:
         for id, count in yakishi_list.items():
-            item_key = "ahiruyaki.hcount." + id
+            item_key = "ahiruyaki.dcount." + id
             put_zbx_sender(conf.get("zabbix","ip"), item_key, "ahiruyaki", count)
             postdata = postdata +  id + ": " + str(count) + u"焼き\n"
 
