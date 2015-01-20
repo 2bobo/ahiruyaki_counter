@@ -283,6 +283,6 @@ if __name__ == '__main__':
         postdata = postdata +  u"@" + id + ": " + str(count) + u"焼き\n"
 
     #post twitter
-    print postdata
+#    print postdata
     api.update_status(postdata)
 
