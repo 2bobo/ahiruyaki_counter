@@ -146,7 +146,6 @@ def run_zbxapi(reqjson):
         return result
     else:
         print "error", reqjson, result
-        #print returndata
         exit()
 
 def authorize(conf):
@@ -163,7 +162,6 @@ def create_zbx_item(tweetid, zbx_api, zbx_auth_key, base_item_key):
         "method": "item.get",
         "params": {
             "hostids": "10107",
-#            "output": "extend",
             "search": {
                 "key_": item_key}
         },
@@ -194,9 +192,6 @@ def create_zbx_item(tweetid, zbx_api, zbx_auth_key, base_item_key):
         "auth":zbx_auth_key,
         "id": 1})
         zbx_item_create_result = zbx_api.send(reqdata)
-#        itemid = zbx_item_create_result["result"]["itemids"][0]
-#        print itemid
-        #time.sleep(60)
         return zbx_item_create_result
     else:
         return zbx_item_check_result
@@ -216,7 +211,6 @@ def get_zbx_ahiruyaki_item(zbx_api, zbx_auth_key, item_key):
         "method": "item.get",
         "params": {
             "hostids": "10107",
-#            "output": "extend",
             "search": {
                 "key_": item_key}
         },
@@ -226,7 +220,9 @@ def get_zbx_ahiruyaki_item(zbx_api, zbx_auth_key, item_key):
 
 
 if __name__ == '__main__':
-    config_file_path = "/usr/local/sbin/scripts/python2/ahiruyaki_counter/config.ini"
+    base = os.path.dirname(os.path.abspath(__file__))
+    config_file_path = os.path.normpath(os.path.join(base, 'config.ini'))
+
     conf = ConfigParser.SafeConfigParser()
     conf.read(config_file_path)
 
@@ -274,7 +270,6 @@ if __name__ == '__main__':
     twdate = start_time + datetime.timedelta(hours = 9)
 #    print start_time + datetime.timedelta(hours = 9)
 #    print end_time + datetime.timedelta(hours = 9)
-#    print twdate.strftime("%Y年%m月%d日%H時")
 
     use_zbx_item = get_zbx_ahiruyaki_item(zbx_api, zbx_auth_key, base_item_key)
     yakishi_list = {}
@@ -288,7 +283,6 @@ if __name__ == '__main__':
     keywords = [u"あひる焼き", u"-RT"]
     query = ' AND '.join(keywords)
     for tweet in api.search(q=query, count=1000):
-#        print type(tweet.created_at)
         textdata = tweet.text.encode('utf-8')
         if textdata.find("あひる焼き") != -1 and textdata.find("あひる焼きカウンター") == -1:
             if start_time < tweet.created_at < end_time :
@@ -297,7 +291,6 @@ if __name__ == '__main__':
                     yakishi_list[tweet.user.screen_name] = 1
                 else:
                     yakishi_list[tweet.user.screen_name] += 1
-#                print tweet.created_at, tweet.user.screen_name, tweet.text
     time.sleep(60)
     if len(yakishi_list) == 0:
         postdata = postdata +  u"あひるは焼かれなかった\n"
@@ -307,7 +300,6 @@ if __name__ == '__main__':
             put_zbx_sender(conf.get("zabbix","ip"), item_key, "ahiruyaki", count)
             postdata = postdata +  id + ": " + str(count) + u"焼き\n"
 
-#    print yakishi_list
     #post twitter
 #    print postdata
 #    api.update_status(postdata)
