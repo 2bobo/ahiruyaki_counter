@@ -9,3 +9,4 @@ access_secret=
 url=http://127.0.0.1/zabbix/api_jsonrpc.php
 userid=admin
 passwd=zabbix
+ip=127.0.0.1
