@@ -174,7 +174,7 @@ def create_zbx_item(tweetid, zbx_api, zbx_auth_key, base_item_key):
             attweetid = u"[毎時]@" + tweetid
             applications_id = ["461"]
         else:
-            attweetid = u"[日次]@" + tweetida
+            attweetid = u"[日次]@" + tweetid
             applications_id = ["462"]
         reqdata = json.dumps({
             "jsonrpc": "2.0",
@@ -282,16 +282,22 @@ if __name__ == '__main__':
     api = tweepy.API(auth_handler=auth)
     keywords = [u"あひる焼き", u"-RT"]
     query = ' AND '.join(keywords)
+    new_yaskihi_list = []
     for tweet in api.search(q=query, count=1000):
         textdata = tweet.text.encode('utf-8')
         if textdata.find("あひる焼き") != -1 and textdata.find("あひる焼きカウンター") == -1:
             if start_time < tweet.created_at < end_time :
                 if not tweet.user.screen_name in yakishi_list:
                     itemdata = create_zbx_item(tweet.user.screen_name, zbx_api, zbx_auth_key, base_item_key)
+                    new_yaskihi_list.append(tweet.user.screen_name)
                     yakishi_list[tweet.user.screen_name] = 1
                 else:
                     yakishi_list[tweet.user.screen_name] += 1
     time.sleep(60)
+    for id in new_yaskihi_list:
+        item_key = base_item_key + id
+        put_zbx_sender(conf.get("zabbix","ip"), item_key, "ahiruyaki", 0)
+
     if len(yakishi_list) == 0:
         postdata = postdata +  u"あひるは焼かれなかった\n"
     else:
@@ -299,7 +305,6 @@ if __name__ == '__main__':
             item_key = base_item_key + id
             put_zbx_sender(conf.get("zabbix","ip"), item_key, "ahiruyaki", count)
             postdata = postdata +  id + ": " + str(count) + u"焼き\n"
-
     #post twitter
 #    print postdata
 #    api.update_status(postdata)
