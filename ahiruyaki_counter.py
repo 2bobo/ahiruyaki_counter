@@ -280,7 +280,7 @@ if __name__ == '__main__':
     postdata = unicode(twdate.strftime("%Y年%m月%d日%H時台に焼かれたあひるの数\n(テスト運用中)\n"),'utf-8', 'ignore')
     auth = authorize(conf)
     api = tweepy.API(auth_handler=auth)
-    keywords = [u"あひる焼き", u"-RT"]
+    keywords = [u"あひる焼き OR #あひる焼きOR ahiruyaki OR #ahiruyaki OR 扒家鸭 OR #扒家鸭", u"-RT"]
     query = ' AND '.join(keywords)
     new_yaskihi_list = []
     for tweet in api.search(q=query, count=1000):
