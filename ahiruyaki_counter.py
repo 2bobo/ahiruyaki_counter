@@ -86,6 +86,8 @@ class ZabbixAPI(object):
                 'password': self.zbx_passwd},
             'auth':None,
             'id': 1})
+        #opener = urllib2.build_opener(urllib2.HTTPSHandler())
+        #urllib2.install_opener(opener)
         req = urllib2.Request(self.zbx_url, auth_post, self.headers)
         f = urllib2.urlopen(req)
         str_value = f.read()
@@ -280,7 +282,7 @@ if __name__ == '__main__':
     postdata = unicode(twdate.strftime("%Y年%m月%d日%H時台に焼かれたあひるの数\n(テスト運用中)\n"),'utf-8', 'ignore')
     auth = authorize(conf)
     api = tweepy.API(auth_handler=auth)
-    keywords = [u"あひる焼き OR #あひる焼きOR ahiruyaki OR #ahiruyaki OR 扒家鸭 OR #扒家鸭", u"-RT"]
+    keywords = [u"あひる焼き OR #あひる焼き OR Ahiruyaki OR #Ahiruyaki ", u"-RT"]
     query = ' AND '.join(keywords)
     new_yaskihi_list = []
     for tweet in api.search(q=query, count=1000):
